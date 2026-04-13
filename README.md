@@ -336,7 +336,7 @@ No responsibility is accepted for any damage caused. Use at your own risk.
 
 ```
 ╔════════════════════════════════════════════════════════╗
-║  WARNING: Backup All Data Before Running This Code!  ║
+║  WARNING: Backup All Data Before Running This Code!    ║
 ╚════════════════════════════════════════════════════════╝
 ```
 
