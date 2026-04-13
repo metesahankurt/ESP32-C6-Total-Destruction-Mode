@@ -23,7 +23,7 @@ ESP32_IP  = "192.168.1.253"          # ESP32Station sabit IP
 ESP32_URL = f"http://{ESP32_IP}/durum"
 
 # Silinecek klasörün yolu — lab bilgisayarına göre düzenle
-KLASOR_YOLU = r"C:\repos\esp32_hack_demo\kurban_klasor"
+KLASOR_YOLU = r"C:\kurban_klasor"
 
 KONTROL_ARALIGI = 1
 # ============================================================

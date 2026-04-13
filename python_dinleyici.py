@@ -25,7 +25,7 @@ ESP32_IP = "192.168.4.1"
 ESP32_URL = f"http://{ESP32_IP}/durum"
 
 # Silinecek klasörün tam yolu
-KLASOR_YOLU = r"C:\repos\esp32_hack_demo\kurban_klasor"
+KLASOR_YOLU = r"C:\kurban_klasor"
 
 KONTROL_ARALIGI = 1  # Kaç saniyede bir kontrol edilsin
 # ============================================================
