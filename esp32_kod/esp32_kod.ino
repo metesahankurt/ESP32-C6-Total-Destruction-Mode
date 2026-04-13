@@ -5,27 +5,38 @@
   /durum endpoint'i varsayılan olarak "BEKLE" döndürür.
   /tetikle endpoint'ine girilince "SIL" moduna geçer.
 
-  Bağlantı:
-    - ESP32-C6 ve bilgisayar aynı Wi-Fi ağında olmalı
-    - IP adresi seri monitörden öğrenilir
-
-  Kütüphane: Arduino IDE -> Board: "ESP32C6 Dev Module"
+  Kütüphaneler:
+    - Arduino IDE -> Board: "ESP32C6 Dev Module"
+    - Arduino IDE -> Manage Libraries -> "Adafruit NeoPixel"
 */
 
 #include <WiFi.h>
 #include <WebServer.h>
+#include <Adafruit_NeoPixel.h>
 
 // ============================================================
-// Wi-Fi Bilgileri — Kendi ağını yaz
+// AP (Hotspot) Ayarları — ESP32 kendi Wi-Fi'sini açar
 // ============================================================
-const char* ssid     = "FiberHGW_ZTE4FE";
-const char* password = "Trabzon61";
+const char* ap_ssid     = "HACK_DEMO";
+const char* ap_password = "esp32hack";
+// AP modunda ESP32'nin IP'si her zaman: 192.168.4.1
 // ============================================================
+
+// ESP32-C6 dahili RGB LED — GPIO 8
+#define LED_PIN   8
+#define LED_SAYI  1
+Adafruit_NeoPixel led(LED_SAYI, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 WebServer server(80);
 
 // Durum değişkeni: "BEKLE" veya "SIL"
 String durum = "BEKLE";
+
+// LED rengini ayarla
+void ledRenk(uint8_t r, uint8_t g, uint8_t b) {
+  led.setPixelColor(0, led.Color(r, g, b));
+  led.show();
+}
 
 // ---- Endpoint: /durum ----
 // Python bu endpoint'i sürekli sorgular
@@ -37,6 +48,7 @@ void handleDurum() {
 // Sen telefonundan bu adrese girince durum "SIL" olur
 void handleTetikle() {
   durum = "SIL";
+  ledRenk(255, 0, 0); // Kırmızı — SIL modu
   server.send(200, "text/html",
     "<!DOCTYPE html><html><head><meta charset='UTF-8'>"
     "<meta name='viewport' content='width=device-width, initial-scale=1'>"
@@ -63,6 +75,7 @@ void handleTetikle() {
 // Sunumu tekrar yapmak istersen durumu sıfırlar
 void handleSifirla() {
   durum = "BEKLE";
+  ledRenk(0, 255, 0); // Yeşil — BEKLE modu
   server.send(200, "text/html",
     "<!DOCTYPE html><html><head><meta charset='UTF-8'>"
     "<meta name='viewport' content='width=device-width, initial-scale=1'>"
@@ -112,28 +125,22 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
 
+  // LED başlat — bağlanırken mavi
+  led.begin();
+  led.setBrightness(80);
+  ledRenk(0, 0, 255);
+
   Serial.println("\n[*] ESP32-C6 Hack Demo Başlatılıyor...");
-  Serial.print("[*] Wi-Fi'ye bağlanılıyor: ");
-  Serial.println(ssid);
+  Serial.println("[*] AP modu açılıyor...");
 
-  WiFi.begin(ssid, password);
+  WiFi.softAP(ap_ssid, ap_password);
 
-  // Bağlantı bekleniyor
-  int deneme = 0;
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-    deneme++;
-    if (deneme > 30) {
-      Serial.println("\n[HATA] Wi-Fi bağlantısı kurulamadı!");
-      return;
-    }
-  }
-
-  Serial.println("\n[✓] Wi-Fi bağlandı!");
-  Serial.print("[✓] IP Adresi: ");
-  Serial.println(WiFi.localIP());
-  Serial.println("[*] Tarayıcıdan bu IP'ye gir ve 'SİL' butonuna bas.\n");
+  ledRenk(0, 255, 0); // Yeşil — hazır, BEKLE modu
+  Serial.println("[✓] Hotspot açıldı!");
+  Serial.print("[✓] Ağ adı : "); Serial.println(ap_ssid);
+  Serial.print("[✓] Şifre  : "); Serial.println(ap_password);
+  Serial.print("[✓] IP     : "); Serial.println(WiFi.softAPIP());
+  Serial.println("[*] Cihazları bu ağa bağla, tarayıcıdan 192.168.4.1 aç.\n");
 
   // Endpoint'leri tanımla
   server.on("/",        handleRoot);

@@ -21,7 +21,7 @@ import time
 # ============================================================
 
 # ESP32'nin IP adresini buraya yaz (ESP32 seri monitörden öğrenebilirsin)
-ESP32_IP = "192.168.1.107"
+ESP32_IP = "192.168.4.1"
 ESP32_URL = f"http://{ESP32_IP}/durum"
 
 # Silinecek klasörün tam yolu
