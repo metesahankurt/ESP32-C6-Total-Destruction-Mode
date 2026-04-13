@@ -21,14 +21,11 @@ import time
 # ============================================================
 
 # ESP32'nin IP adresini buraya yaz (ESP32 seri monitörden öğrenebilirsin)
-ESP32_IP = "192.168.1.100"
+ESP32_IP = "192.168.1.107"
 ESP32_URL = f"http://{ESP32_IP}/durum"
 
 # Silinecek klasörün tam yolu
-# Mac/Linux örneği:
-KLASOR_YOLU = os.path.join(os.path.dirname(os.path.abspath(__file__)), "C:\repos\esp32_hack_demo\kurban_klasor")
-# Windows için şuna benzer bir yol kullan:
-# KLASOR_YOLU = r"C:\Users\KullaniciAdi\Desktop\kurban_klasor"
+KLASOR_YOLU = r"C:\repos\esp32_hack_demo\kurban_klasor"
 
 KONTROL_ARALIGI = 1  # Kaç saniyede bir kontrol edilsin
 # ============================================================
