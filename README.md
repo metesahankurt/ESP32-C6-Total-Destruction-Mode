@@ -1,5 +1,15 @@
 # 🚨 ESP32-C6 Hack Demo - Total Destruction Mode
 
+![ESP32-C6](https://img.shields.io/badge/MCU-ESP32--C6-red)
+![Platform](https://img.shields.io/badge/Platform-Windows-0078D4)
+![Language](https://img.shields.io/badge/Language-Python%20%2B%20Arduino-blue)
+![License](https://img.shields.io/badge/License-Educational%20Only-important)
+![Status](https://img.shields.io/badge/Status-Demo%20Project-yellow)
+
+## About
+
+A **destructive security demonstration project** showcasing ESP32-C6 microcontroller capabilities for educational and authorized lab testing. This project demonstrates remote system manipulation through Wi-Fi connectivity using two operational modes: Station mode (existing network) and AP mode (hotspot creation).
+
 **⚠️ CRITICAL WARNING: This code was NOT designed to run on your own computer!**
 
 This project is designed to cause a target Windows computer to **completely lose all data** using the ESP32-C6 module. It should only be used in **controlled lab environments** and on **test machines**.
