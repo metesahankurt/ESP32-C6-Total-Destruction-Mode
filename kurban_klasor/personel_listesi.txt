@@ -1,0 +1,18 @@
+================================
+     PERSONEL BİLGİLERİ
+================================
+
+DEPARTMAN: Ar-Ge / Yazılım
+
+Ad Soyad            | Unvan                | Maaş
+--------------------|----------------------|----------
+Ahmet Yıldız        | Yazılım Mimarı       | 85.000 TL
+Fatma Şahin         | Kıdemli Geliştirici  | 72.000 TL
+Burak Arslan        | DevOps Mühendisi     | 68.000 TL
+Selin Öztürk        | Veri Bilimci         | 75.000 TL
+Emre Kılıç          | Junior Geliştirici   | 42.000 TL
+
+Toplam Kadro: 5 kişi
+Belge Güncellenme: 2026-03-01
+
+[GİZLİ — İNSAN KAYNAKLARI DEPARTMANI]

@@ -1,0 +1,21 @@
+================================
+       FİNANSAL KAYITLAR
+================================
+
+Hesap Sahibi  : Demo Şirketi A.Ş.
+IBAN          : TR00 0000 0000 0000 0000 0000 00
+Banka         : Demo Bank
+Şube Kodu     : 9999
+
+--- İşlem Geçmişi ---
+
+Tarih         | Açıklama              | Tutar
+--------------|-----------------------|----------
+2026-04-01    | Maaş ödemeleri        | -250.000 TL
+2026-04-05    | Tedarikçi faturası    | -85.000 TL
+2026-04-08    | Müşteri ödemesi       | +320.000 TL
+2026-04-10    | Kira ödemesi          | -45.000 TL
+
+Güncel Bakiye: 1.240.000 TL
+
+[!] BU DOSYA SANAL SUNUm AMAÇLIDIR — GERÇEK VERİ DEĞİLDİR
