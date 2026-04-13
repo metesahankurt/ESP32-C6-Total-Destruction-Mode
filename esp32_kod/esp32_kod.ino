@@ -18,8 +18,8 @@
 // ============================================================
 // Wi-Fi Bilgileri — Kendi ağını yaz
 // ============================================================
-const char* ssid     = "WIFI_ADI";
-const char* password = "WIFI_SIFRESI";
+const char* ssid     = "FiberHGW_ZTE4FE";
+const char* password = "Trabzon61";
 // ============================================================
 
 WebServer server(80);

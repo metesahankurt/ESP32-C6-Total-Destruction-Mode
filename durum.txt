@@ -1,3 +1,4 @@
+
 """
 ESP32 Hack Demo - Python Dinleyici
 ===================================
@@ -81,3 +82,22 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+#####
+
+hata
+
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
+
+PS C:\repos\esp32_hack_demo\dist> .\python_dinleyici.exe
+==================================================
+  ESP32 HACK DEMO — SİNYAL DİNLEYİCİ
+==================================================
+ESP32 adresi : http://192.168.1.100/durum
+epos\esp32_hack_demo\kurban_klasorata\Local\Temp\_MEI275442\
+
+[HATA] Hedef klasör bulunamadı! Yolu kontrol et.
+PS C:\repos\esp32_hack_demo\dist>
