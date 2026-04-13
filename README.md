@@ -1,4 +1,4 @@
-# 🚨 ESP32-C6 Hack Demo - Total Destruction Mode
+# 🚨 ESP32-C6 - Total Destruction Mode
 
 **⚠️ CRITICAL WARNING: This code was NOT designed to run on your own computer!**
 
