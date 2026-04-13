@@ -1,9 +1,15 @@
 /*
-  ESP32-C6 Hack Demo — Web Sunucusu
-  ==================================
-  Sunum sırasında bir web sayfası yayınlar.
-  /durum endpoint'i varsayılan olarak "BEKLE" döndürür.
-  /tetikle endpoint'ine girilince "SIL" moduna geçer.
+  ESP32-C6 Hack Demo — Station Modu (Mevcut Wi-Fi'ye Bağlan)
+  ============================================================
+  ESP32 lab'ın mevcut Wi-Fi'sine bağlanır.
+  PC LAN ile, ESP32 Wi-Fi ile aynı router'a bağlı olur — ikisi birbirini görür.
+
+  Kullanım:
+    1. ssid ve password'ü lab Wi-Fi bilgileriyle doldur
+    2. Upload et, Serial Monitor'dan IP'yi öğren
+    3. python_dinleyici.py'deki ESP32_IP'yi o IP ile güncelle
+    4. Exe oluştur, çalıştır
+    5. Telefondan (aynı Wi-Fi'de) IP'ye gir, butona bas
 
   Kütüphaneler:
     - Arduino IDE -> Board: "ESP32C6 Dev Module"
@@ -15,11 +21,15 @@
 #include <Adafruit_NeoPixel.h>
 
 // ============================================================
-// AP (Hotspot) Ayarları — ESP32 kendi Wi-Fi'sini açar
+// Wi-Fi Bilgileri — Lab'ın ağını yaz
 // ============================================================
-const char* ap_ssid     = "HACK_DEMO";
-const char* ap_password = "12345678";
-// AP modunda ESP32'nin IP'si her zaman: 192.168.4.1
+const char* ssid     = "LAB_WIFI_ADI";
+const char* password = "LAB_WIFI_SIFRESI";
+
+// Sabit IP — lab ağına göre ayarla (router genelde 192.168.1.1)
+IPAddress local_IP(192, 168, 1, 253);
+IPAddress gateway(192, 168, 1, 1);
+IPAddress subnet(255, 255, 255, 0);
 // ============================================================
 
 // ESP32-C6 dahili RGB LED — GPIO 8
@@ -29,26 +39,22 @@ Adafruit_NeoPixel led(LED_SAYI, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 WebServer server(80);
 
-// Durum değişkeni: "BEKLE" veya "SIL"
 String durum = "BEKLE";
 
-// LED rengini ayarla
 void ledRenk(uint8_t r, uint8_t g, uint8_t b) {
   led.setPixelColor(0, led.Color(r, g, b));
   led.show();
 }
 
 // ---- Endpoint: /durum ----
-// Python bu endpoint'i sürekli sorgular
 void handleDurum() {
   server.send(200, "text/plain", durum);
 }
 
 // ---- Endpoint: /tetikle ----
-// Sen telefonundan bu adrese girince durum "SIL" olur
 void handleTetikle() {
   durum = "SIL";
-  ledRenk(255, 0, 0); // Kırmızı — SIL modu
+  ledRenk(255, 0, 0);
   server.send(200, "text/html",
     "<!DOCTYPE html><html><head><meta charset='UTF-8'>"
     "<meta name='viewport' content='width=device-width, initial-scale=1'>"
@@ -72,10 +78,9 @@ void handleTetikle() {
 }
 
 // ---- Endpoint: /sifirla ----
-// Sunumu tekrar yapmak istersen durumu sıfırlar
 void handleSifirla() {
   durum = "BEKLE";
-  ledRenk(0, 255, 0); // Yeşil — BEKLE modu
+  ledRenk(0, 255, 0);
   server.send(200, "text/html",
     "<!DOCTYPE html><html><head><meta charset='UTF-8'>"
     "<meta name='viewport' content='width=device-width, initial-scale=1'>"
@@ -125,24 +130,38 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
 
-  // LED başlat — bağlanırken mavi
   led.begin();
   led.setBrightness(80);
-  ledRenk(0, 0, 255);
+  ledRenk(0, 0, 255); // Mavi — bağlanıyor
 
-  Serial.println("\n[*] ESP32-C6 Hack Demo Başlatılıyor...");
-  Serial.println("[*] AP modu açılıyor...");
+  Serial.println("\n[*] ESP32-C6 Station Modu Başlatılıyor...");
+  Serial.print("[*] Wi-Fi'ye bağlanılıyor: ");
+  Serial.println(ssid);
 
-  WiFi.softAP(ap_ssid);
+  if (!WiFi.config(local_IP, gateway, subnet)) {
+    Serial.println("[!] Sabit IP ayarlanamadı, DHCP kullanılıyor.");
+  }
 
-  ledRenk(0, 255, 0); // Yeşil — hazır, BEKLE modu
-  Serial.println("[✓] Hotspot açıldı!");
-  Serial.print("[✓] Ağ adı : "); Serial.println(ap_ssid);
-  Serial.print("[✓] Şifre  : "); Serial.println(ap_password);
-  Serial.print("[✓] IP     : "); Serial.println(WiFi.softAPIP());
-  Serial.println("[*] Cihazları bu ağa bağla, tarayıcıdan 192.168.4.1 aç.\n");
+  WiFi.begin(ssid, password);
 
-  // Endpoint'leri tanımla
+  int deneme = 0;
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+    deneme++;
+    if (deneme > 30) {
+      ledRenk(255, 50, 0); // Turuncu — bağlantı hatası
+      Serial.println("\n[HATA] Wi-Fi bağlantısı kurulamadı!");
+      return;
+    }
+  }
+
+  ledRenk(0, 255, 0); // Yeşil — hazır
+  Serial.println("\n[✓] Wi-Fi bağlandı!");
+  Serial.print("[✓] IP Adresi: ");
+  Serial.println(WiFi.localIP());
+  Serial.println("[*] Telefonu aynı Wi-Fi'ye bağla, tarayıcıdan bu IP'ye gir.\n");
+
   server.on("/",        handleRoot);
   server.on("/durum",   handleDurum);
   server.on("/tetikle", handleTetikle);
