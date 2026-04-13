@@ -18,7 +18,7 @@
 // AP (Hotspot) Ayarları — ESP32 kendi Wi-Fi'sini açar
 // ============================================================
 const char* ap_ssid     = "HACK_DEMO";
-const char* ap_password = "esp32hack";
+const char* ap_password = "12345678";
 // AP modunda ESP32'nin IP'si her zaman: 192.168.4.1
 // ============================================================
 
