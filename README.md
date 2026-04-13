@@ -1,4 +1,4 @@
-# 🚨 ESP32-C6 Hack Demo - Total Destruction Mode
+# 🚨 ESP32-C6 - Total Destruction Mode
 
 ![ESP32-C6](https://img.shields.io/badge/MCU-ESP32--C6-red)
 ![Platform](https://img.shields.io/badge/Platform-Windows-0078D4)
