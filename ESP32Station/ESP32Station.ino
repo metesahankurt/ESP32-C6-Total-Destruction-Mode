@@ -23,8 +23,8 @@
 // ============================================================
 // Wi-Fi Bilgileri — Lab'ın ağını yaz
 // ============================================================
-const char* ssid     = "LAB_WIFI_ADI";
-const char* password = "LAB_WIFI_SIFRESI";
+const char* ssid     = "FiberHGW_ZTE4FE";
+const char* password = "Trabzon61";
 
 // Sabit IP — lab ağına göre ayarla (router genelde 192.168.1.1)
 IPAddress local_IP(192, 168, 1, 253);

