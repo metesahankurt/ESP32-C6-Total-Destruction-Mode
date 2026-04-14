@@ -1,17 +1,17 @@
 /*
-  ESP32-C6 Hack Demo — Station Modu (Mevcut Wi-Fi'ye Bağlan)
-  ============================================================
-  ESP32 lab'ın mevcut Wi-Fi'sine bağlanır.
-  PC LAN ile, ESP32 Wi-Fi ile aynı router'a bağlı olur — ikisi birbirini görür.
+  ESP32-C6 — Station Mode (Connect to Existing Wi-Fi)
+  ===================================================
+  ESP32 connects to the lab's existing Wi-Fi network.
+  PC & ESP32 will be on the same network via the router — they can see each other.
 
-  Kullanım:
-    1. ssid ve password'ü lab Wi-Fi bilgileriyle doldur
-    2. Upload et, Serial Monitor'dan IP'yi öğren
-    3. python_dinleyici.py'deki ESP32_IP'yi o IP ile güncelle
-    4. Exe oluştur, çalıştır
-    5. Telefondan (aynı Wi-Fi'de) IP'ye gir, butona bas
+  Usage:
+    1. Fill in ssid and password with your lab Wi-Fi credentials
+    2. Upload, read IP from Serial Monitor
+    3. Update ESP32_IP in python_dinleyici.py with that IP
+    4. Create exe, run it
+    5. From phone (same Wi-Fi), visit IP address, press button
 
-  Kütüphaneler:
+  Libraries:
     - Arduino IDE -> Board: "ESP32C6 Dev Module"
     - Arduino IDE -> Manage Libraries -> "Adafruit NeoPixel"
 */
@@ -21,27 +21,27 @@
 #include <Adafruit_NeoPixel.h>
 
 // ============================================================
-// Wi-Fi Bilgileri — Lab'ın ağını yaz
+// Wi-Fi Credentials — Enter your lab's network info
 // ============================================================
 const char* ssid     = "FiberHGW_ZTE4FE";
 const char* password = "Trabzon61";
 
-// Sabit IP — lab ağına göre ayarla (router genelde 192.168.1.1)
+// Static IP — adjust based on router subnet (router is usually 192.168.1.1)
 IPAddress local_IP(192, 168, 1, 253);
 IPAddress gateway(192, 168, 1, 1);
 IPAddress subnet(255, 255, 255, 0);
 // ============================================================
 
-// ESP32-C6 dahili RGB LED — GPIO 8
+// ESP32-C6 built-in RGB LED — GPIO 8
 #define LED_PIN   8
-#define LED_SAYI  1
-Adafruit_NeoPixel led(LED_SAYI, LED_PIN, NEO_GRB + NEO_KHZ800);
+#define LED_COUNT  1
+Adafruit_NeoPixel led(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 WebServer server(80);
 
 String durum = "BEKLE";
 
-void ledRenk(uint8_t r, uint8_t g, uint8_t b) {
+void ledColor(uint8_t r, uint8_t g, uint8_t b) {
   led.setPixelColor(0, led.Color(r, g, b));
   led.show();
 }
@@ -54,7 +54,7 @@ void handleDurum() {
 // ---- Endpoint: /tetikle ----
 void handleTetikle() {
   durum = "SIL";
-  ledRenk(255, 0, 0);
+  ledColor(255, 0, 0);
   server.send(200, "text/html",
     "<!DOCTYPE html><html><head><meta charset='UTF-8'>"
     "<meta name='viewport' content='width=device-width, initial-scale=1'>"
@@ -67,20 +67,20 @@ void handleTetikle() {
     "@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}"
     "</style></head>"
     "<body><div class='box'>"
-    "<h1>&#9888; S&#304;STEM &#304;HLAL&#304; &#9888;</h1>"
-    "<p>[ SIL KOMUTU ALINDI ]<br>"
-    "Hedef dosyalar imha ediliyor...<br>"
-    "&#304;&#351;lem geri al&#305;namaz.</p>"
-    "<p class='warn'>UYARI: Bu i&#351;lem kay&#305;t alt&#305;na al&#305;nd&#305;.</p>"
+    "<h1>&#9888; SYSTEM FAILURE &#9888;</h1>"
+    "<p>[ DELETE COMMAND RECEIVED ]<br>"
+    "Target files being destroyed...<br>"
+    "Operation cannot be undone.</p>"
+    "<p class='warn'>WARNING: This operation has been logged.</p>"
     "</div></body></html>"
   );
-  Serial.println("[!] SIL komutu gönderildi!");
+  Serial.println("[!] DELETE command sent!");
 }
 
 // ---- Endpoint: /sifirla ----
 void handleSifirla() {
   durum = "BEKLE";
-  ledRenk(0, 255, 0);
+  ledColor(0, 255, 0);
   server.send(200, "text/html",
     "<!DOCTYPE html><html><head><meta charset='UTF-8'>"
     "<meta name='viewport' content='width=device-width, initial-scale=1'>"
@@ -90,15 +90,15 @@ void handleSifirla() {
     "h1{font-size:1.8em;letter-spacing:3px;} p{color:#66ff66;}"
     "</style></head>"
     "<body><div class='box'>"
-    "<h1>[ S&#304;STEM S&#304;F&#304;RLANDI ]</h1>"
-    "<p>Durum: BEKLE moduna ge&#231;ildi.<br>Sistem yeniden haz&#305;r.</p>"
-    "<p><a href='/' style='color:#00ff00;'>&#8592; Panele D&#246;n</a></p>"
+    "<h1>[ SYSTEM RESET ]</h1>"
+    "<p>Status: Switched to BEKLE mode.<br>System is ready again.</p>"
+    "<p><a href='/' style='color:#00ff00;'>&#8592; Return to Panel</a></p>"
     "</div></body></html>"
   );
-  Serial.println("[*] Durum sıfırlandı: BEKLE");
+  Serial.println("[*] Status reset: BEKLE");
 }
 
-// ---- Ana Kontrol Paneli ----
+// ---- Main Control Panel ----
 void handleRoot() {
   String html = "<!DOCTYPE html><html><head><meta charset='UTF-8'>";
   html += "<meta name='viewport' content='width=device-width, initial-scale=1'>";
@@ -116,12 +116,12 @@ void handleRoot() {
   html += ".footer{margin-top:20px;font-size:0.65em;color:#333;letter-spacing:2px;}";
   html += "</style></head>";
   html += "<body><div class='terminal'>";
-  html += "<div class='title'>[ KONTROL PANELI ]</div>";
-  html += "<div class='subtitle'>ESP32-C6 // UZAK ERISIM</div>";
-  html += "<div class='status'>SISTEM DURUMU: <span>" + durum + "</span></div>";
-  html += "<a href='/tetikle' class='btn red'>&gt;&gt; SIL KOMUTUNU CALISTIR &lt;&lt;</a>";
-  html += "<a href='/sifirla' class='btn dim'>[ SISTEMI SIFIRLA ]</a>";
-  html += "<div class='footer'>YETKISIZ ERISIM YASAKTIR</div>";
+  html += "<div class='title'>[ CONTROL PANEL ]</div>";
+  html += "<div class='subtitle'>ESP32-C6 // REMOTE ACCESS</div>";
+  html += "<div class='status'>SYSTEM STATUS: <span>" + durum + "</span></div>";
+  html += "<a href='/tetikle' class='btn red'>&gt;&gt; RUN DELETE COMMAND &lt;&lt;</a>";
+  html += "<a href='/sifirla' class='btn dim'>[ RESET SYSTEM ]</a>";
+  html += "<div class='footer'>UNAUTHORIZED ACCESS PROHIBITED</div>";
   html += "</div></body></html>";
   server.send(200, "text/html", html);
 }
@@ -132,35 +132,35 @@ void setup() {
 
   led.begin();
   led.setBrightness(80);
-  ledRenk(0, 0, 255); // Mavi — bağlanıyor
+  ledColor(0, 0, 255); // Blue — connecting
 
-  Serial.println("\n[*] ESP32-C6 Station Modu Başlatılıyor...");
-  Serial.print("[*] Wi-Fi'ye bağlanılıyor: ");
+  Serial.println("\n[*] ESP32-C6 Station Mode Starting...");
+  Serial.print("[*] Connecting to Wi-Fi: ");
   Serial.println(ssid);
 
   if (!WiFi.config(local_IP, gateway, subnet)) {
-    Serial.println("[!] Sabit IP ayarlanamadı, DHCP kullanılıyor.");
+    Serial.println("[!] Static IP configuration failed, using DHCP.");
   }
 
   WiFi.begin(ssid, password);
 
-  int deneme = 0;
+  int attempts = 0;
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
-    deneme++;
-    if (deneme > 30) {
-      ledRenk(255, 50, 0); // Turuncu — bağlantı hatası
-      Serial.println("\n[HATA] Wi-Fi bağlantısı kurulamadı!");
+    attempts++;
+    if (attempts > 30) {
+      ledColor(255, 50, 0); // Orange — connection error
+      Serial.println("\n[ERROR] Wi-Fi connection failed!");
       return;
     }
   }
 
-  ledRenk(0, 255, 0); // Yeşil — hazır
-  Serial.println("\n[✓] Wi-Fi bağlandı!");
-  Serial.print("[✓] IP Adresi: ");
+  ledColor(0, 255, 0); // Green — ready
+  Serial.println("\n[✓] Wi-Fi connected!");
+  Serial.print("[✓] IP Address: ");
   Serial.println(WiFi.localIP());
-  Serial.println("[*] Telefonu aynı Wi-Fi'ye bağla, tarayıcıdan bu IP'ye gir.\n");
+  Serial.println("[*] Connect your phone to the same Wi-Fi, visit this IP in browser.\n");
 
   server.on("/",        handleRoot);
   server.on("/durum",   handleDurum);
@@ -168,7 +168,7 @@ void setup() {
   server.on("/sifirla", handleSifirla);
 
   server.begin();
-  Serial.println("[✓] Web sunucusu başlatıldı. Hazır!\n");
+  Serial.println("[✓] Web server started. Ready!\n");
 }
 
 void loop() {
