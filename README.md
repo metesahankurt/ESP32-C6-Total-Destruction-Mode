@@ -300,7 +300,7 @@ requests.get("http://192.168.4.1/tetikle")
 
 - **ESP32-C6 Datasheet:** https://www.espressif.com/sites/default/files/documentation/esp32-c6_datasheet_en.pdf
 - **Arduino-ESP32:** https://github.com/espressif/arduino-esp32
-- **Adafruit NeoPixel:** https://www.adafruit.com/product/1655
+- **Adafruit NeoPixel:** https://www.adafruit.com/product/5672
 - **WebServer Library:** Built-in with Arduino ESP32
 
 ---
